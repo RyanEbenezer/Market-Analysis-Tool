@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 import tkinter.font as tkFont
 import time
-
+from google.cloud import datastore
 
 def hello():  
     """Place holder function"""
@@ -79,8 +79,26 @@ class app():
         welcome_font = tkFont.Font(family="Lucida Grande", size=55)
         welcome_label = Label(self.root, text='         Welcome To \nThe Market Analysis App ',font=welcome_font)
         welcome_label.pack(fill='both', expand=True, anchor=CENTER)
-        
+       
 
+datastore_client = datastore.Client()
+
+def store_time(dt):
+    entity = datastore.Entity(key=datastore_client.key('visit'))
+    entity.update({
+        'timestamp': dt
+    })
+
+    datastore_client.put(entity)
+
+
+def fetch_times(limit):
+    query = datastore_client.query(kind='visit')
+    query.order = ['-timestamp']
+
+    times = query.fetch(limit=limit)
+
+    return times
 
 if __name__ == "__main__": 
 
